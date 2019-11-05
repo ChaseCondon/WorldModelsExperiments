@@ -1,2 +1,4 @@
 # WorldModelsExperiments
 Respository for my MSci Computing Science project doing research into model-based reinforcement learning based on the World Models paper (Ha et al., 2018)
+
+The World Model proposed in the original paper utilized a simple linear controller to map the latent vectors representing time and space to actions. While they explored a sort of "sudo-exploration" by increasing the uncertainty of the Memory model (MDN-RNN) to simulate incredibly stochastic environments, the agent itself had no concept of exploration and would only ever perform the action specified by the linear mapping. This research seeks to explore combining the world model with traditional and state-of-the-art RL models (DQN, DDQN, A3C, Rainbow) and its impact on the robustness of the trained agent on the VizDoom TakeCover environment.
