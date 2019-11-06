@@ -46,5 +46,6 @@ if __name__ == '__main__':
                 episode_rewards.append(episode_reward)
                 break
         
-        print(f"episode {e}/{NUM_EPISODES}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}")
+        if e%1000 == 0:
+            print(f"episode {e}/{NUM_EPISODES}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}")
             
