@@ -5,7 +5,7 @@ import gym
 import vizdoomgym
 import numpy as np
 
-from models.DQN import DQNAgent
+from models.DDQN import DDQNAgent
 
 NUM_EPISODES  = 1000000
 NUM_STEPS     = 5000
@@ -14,8 +14,8 @@ EPSILON = 0.9
 EPSILON_DECAY = 0.99
 
 if __name__ == '__main__':
-    env = gym.make('VizdoomBasic-v0')
-    agent = DQNAgent(env.observation_space.shape, env.action_space.n, batch_size=32)
+    env = gym.make('VizdoomTakeCover-v0')
+    agent = DDQNAgent(env.observation_space.shape, env.action_space.n, batch_size=32)
 
     total_reward = 0
     episode_rewards = []
@@ -46,6 +46,5 @@ if __name__ == '__main__':
                 episode_rewards.append(episode_reward)
                 break
         
-        if e%1000 == 0:
-            print(f"episode {e}/{NUM_EPISODES}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}")
+        print(f"episode {e}/{NUM_EPISODES}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}")
             

@@ -51,7 +51,7 @@ class DDQNAgent(object):
         return model
 
     def train(self, terminal_state, step):
-        if self.replay_memory.size < self.buffer_min_size:
+        if self.replay_buffer.size < self.buffer_min_size:
             return
         mini_batch = self.replay_buffer.sample(self.batch_size)
 
