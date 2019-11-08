@@ -1,5 +1,6 @@
 import argparse
 import random
+import os
 
 import gym
 import vizdoomgym
@@ -14,6 +15,8 @@ EPSILON = 0.9
 EPSILON_DECAY = 0.99
 
 if __name__ == '__main__':
+    os.chdir('/nfs')
+    f = open("run_dqnn_out.txt", "w+")
     env = gym.make('VizdoomTakeCover-v0')
     agent = DDQNAgent(env.observation_space.shape, env.action_space.n, batch_size=32)
 
@@ -48,4 +51,7 @@ if __name__ == '__main__':
         
         if e%1000 == 0:
             print(f"episode {e}/{NUM_EPISODES}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}")
+            f.write(f"episode {e}/{NUM_EPISODES}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}")
+    
+    f.close()
             
