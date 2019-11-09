@@ -16,12 +16,12 @@ EPSILON_DECAY = 0.99
 
 if __name__ == '__main__':
     os.chdir('/nfs')
-    f = open("run_dqnn_out.txt", "w+")
     env = gym.make('VizdoomTakeCover-v0')
     agent = DDQNAgent(env.observation_space.shape, env.action_space.n, batch_size=32)
 
     total_reward = 0
     episode_rewards = []
+    logs = []
 
     for e in range(NUM_EPISODES):
 
@@ -50,8 +50,9 @@ if __name__ == '__main__':
                 break
         
         if e%1000 == 0:
-            print(f"episode {e}/{NUM_EPISODES}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}")
-            f.write(f"episode {e}/{NUM_EPISODES}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}")
-    
-    f.close()
-            
+            print(f"episode {e+1}/{NUM_EPISODES}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}")
+            logs.append(f"episode {e+1}/{NUM_EPISODES}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}")
+
+    with open("run_dqnn_out.txt", "w+") as file:
+        for log in logs:
+            file.write(log + '\n')
