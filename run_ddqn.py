@@ -36,7 +36,11 @@ if __name__ == '__main__':
 
             EPSILON *= EPSILON_DECAY
 
-            next_state, reward, done, info = env.step(action)
+            try:
+                next_state, reward, done, info = env.step(action)
+            except Exception as ex:
+                print(f"Exception encountered in ep {e}: {ex}")
+                logs.append(f"Exception encountered in ep {e}: {ex}")
 
             agent.add_experience(state, action, reward, done, next_state)
             agent.train(done, t_step)
