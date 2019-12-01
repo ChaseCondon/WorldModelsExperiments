@@ -40,6 +40,7 @@ if __name__ == '__main__':
     total_t_step = 0
 
     print("Environment and Agent intialized. Beginning game...")
+    print(os.path.exists(f"{os.getcwd()}/models/ddqn.h5"))
 
     while True:
 
@@ -76,7 +77,8 @@ if __name__ == '__main__':
                 break
         
         if episode%10 == 0:
-            agent.model.save_weights("/WorldModelsExperiments/models/ddqn.h5", overwrite=True)
+            print(os.listdir(os.getcwd()))
+            agent.model.save_weights(f"{os.getcwd()}/models/ddqn.h5", overwrite=True)
 
         if len(episode_rewards) > 1:
             average_reward = np.mean(episode_rewards[:-1])
@@ -90,7 +92,7 @@ if __name__ == '__main__':
 
         last_average = average_reward
 
-    agent.model.save_weights("/WorldModelsExperiments/models/ddqn.h5", overwrite=True)
+    agent.model.save_weights(f"{os.getcwd()}/models/ddqn.h5", overwrite=True)
     with open("run_dqnn_out.txt", "w+") as file:
         for log in logs:
             file.write(log + '\n')
