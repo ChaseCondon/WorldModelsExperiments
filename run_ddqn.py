@@ -78,7 +78,7 @@ if __name__ == '__main__':
         
         if episode%10 == 0:
             print(os.listdir(os.getcwd()))
-            agent.save_model("ddqn.h5", overwrite=True)
+            agent.save_model("ddqn.h5")
 
         if len(episode_rewards) > 1:
             average_reward = np.mean(episode_rewards[:-1])
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
         last_average = average_reward
 
-    agent.save_model("ddqn.h5", overwrite=True)
+    agent.save_model("ddqn.h5")
     with open("run_dqnn_out.txt", "w+") as file:
         for log in logs:
             file.write(log + '\n')

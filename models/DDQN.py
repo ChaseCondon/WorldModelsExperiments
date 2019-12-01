@@ -157,4 +157,4 @@ class DoubleDQNAgent():
     
     # save the model which is under training
     def save_model(self, name):
-        self.model.save_weights(name)
+        self.model.save_weights(name, overwrite=True)
