@@ -75,9 +75,10 @@ if __name__ == '__main__':
                 break
         
         if episode%10 == 0:
-            agent.model.save_weights("models/ddqn.h5", overwrite=True)
+            agent.model.save_weights("/WorldModelsExperiments/models/ddqn.h5", overwrite=True)
 
-        average_reward = np.mean(episode_rewards[:-1])
+        if len(episode_rewards) > 1:
+            average_reward = np.mean(episode_rewards[:-1])
         
         if (episode-1)%50 == 0:
             print(f"Episode {episode}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}\n\taverage_reward: {average_reward}\n\tchange in average:{average_reward-last_average}")
