@@ -40,7 +40,7 @@ if __name__ == '__main__':
     total_t_step = 0
 
     print("Environment and Agent intialized. Beginning game...")
-    print(os.path.exists(f"{os.getcwd()}/models/ddqn.h5"))
+    print(f"{os.getcwd()}/models/ddqn.h5", os.path.exists(f"{os.getcwd()}/models/ddqn.h5"))
 
     while True:
 
