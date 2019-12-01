@@ -33,6 +33,7 @@ if __name__ == '__main__':
 
     episode = 0
     total_reward = 0
+    average_reward = 0
     last_average = 0
     episode_rewards = []
     logs = []
