@@ -38,11 +38,15 @@ if __name__ == '__main__':
     logs = []
     total_t_step = 0
 
+    print("Environment and Agent intialized. Beginning game...")
+
     while True:
 
         episode += 1
         episode_reward = 0
         state = env.reset()
+
+
     
         for t_step in range(NUM_STEPS):
             total_t_step += 1
@@ -75,7 +79,7 @@ if __name__ == '__main__':
 
         average_reward = np.mean(episode_rewards[:-1])
         
-        if episode%50 == 0:
+        if (episode-1)%50 == 0:
             print(f"Episode {episode}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}\n\taverage_reward: {average_reward}\n\tchange in average:{average_reward-last_average}")
         logs.append(f"Episode {episode}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}")
 
