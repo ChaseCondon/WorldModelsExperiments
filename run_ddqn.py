@@ -85,12 +85,12 @@ if __name__ == '__main__':
             print(f"Episode {episode}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}\n\taverage_reward: {average_reward}\n\tchange in average:{average_reward-last_average}")
         logs.append(f"Episode {episode}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}")
 
-        if abs(average_reward - last_average) < .01:
+        if episode != 1 and abs(average_reward - last_average) < .01:
             break
 
         last_average = average_reward
 
-    agent.model.save_weights("models/ddqn.h5", overwrite=True)
+    agent.model.save_weights("/WorldModelsExperiments/models/ddqn.h5", overwrite=True)
     with open("run_dqnn_out.txt", "w+") as file:
         for log in logs:
             file.write(log + '\n')
