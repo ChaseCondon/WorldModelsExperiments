@@ -6,7 +6,7 @@ import numpy as np
 
 from .ReplayBuffer import ReplayBuffer
 
-class DQNAgent(Agent):
+class DQNAgent():
     """The Deep Q-Network"""
 
     def __init__(self, observation_shape, action_size, batch_size=4):

@@ -15,7 +15,8 @@ apt-get install -y python-numpy \
     python-numpy &&\
 git clone https://github.com/simontudo/vizdoomgym.git && \
 cd vizdoomgym && git checkout docker && \
-pip install -e .
+pip install -e . && \
+pip install scikit-image
 
 ENTRYPOINT ["/bin/bash"]
 

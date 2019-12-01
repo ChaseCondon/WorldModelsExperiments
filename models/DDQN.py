@@ -1,97 +1,160 @@
+# based on code from: https://github.com/flyyufelix/VizDoom-Keras-RL/blob/master/ddqn.py
+import random
+
 import tensorflow as tf
-from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
-from tensorflow.keras.optimizers import Adam
+import tensorflow.keras as keras
+import tensorflow.keras.layers as kl
 import numpy as np
 
 from .ReplayBuffer import ReplayBuffer
 
-class DDQNAgent(object):
+class DoubleDQNAgent():
     """The Double Deep Q-Network"""
 
-    def __init__(self, observation_shape, action_size, batch_size=4):
-        self.observation_shape = observation_shape
+    def __init__(self, state_size, action_size):
+        self.state_size = state_size
         self.action_size = action_size 
-        self.batch_size = batch_size
 
+        self.gamma = 0.99
+        self.learning_rate = 0.0001
+        self.epsilon = 1.0
+        self.initial_epsilon = 1.0
+        self.final_epsilon = 0.0001
+        self.batch_size = 32
+        self.observe = 5000
+        self.explore = 50000
+        self.frame_per_action = 4
+        self.update_target_freq = 3000
+        self.timestep_per_train = 100 # number of timesteps between training interval
+        
         self.replay_buffer = ReplayBuffer(50000)
         self.buffer_min_size = 10000
 
-        self.learning_rate = 0.001
-        self.gamma = 0.75
-        
-        self.model = self.create_model()
-        self.target_model = self.create_model()
+        self.model = self.create_model(self.state_size, self.action_size, self.learning_rate)
+        self.target_model = self.create_model(self.state_size, self.action_size, self.learning_rate)
+
+    def create_model(self, input_shape, action_size, learning_rate):
+        model = keras.Sequential()
+        model.add(kl.Conv2D(32, (8, 8), strides=(4, 4), activation='relu',
+                                    input_shape=(input_shape)))
+        model.add(kl.Conv2D(64, (4, 4), strides=(2, 2), activation='relu'))
+        model.add(kl.Conv2D(54, (3, 3), activation='relu'))
+        model.add(kl.Flatten())
+        model.add(kl.Dense(512, activation='relu'))
+        model.add(kl.Dense(action_size, activation='linear'))
+
+        adam = tf.keras.optimizers.Adam(lr=learning_rate)
+        model.compile(loss='mse', optimizer=adam)
+
+        return model
+    
+    def update_target_model(self):
+        """
+        After some time interval update the target model to be same with model
+        """
+
         self.target_model.set_weights(self.model.get_weights())
 
-        self.target_update_counter = 0
-        self.update_target_step = 5
-        
-
-    def create_model(self):
-        """Creates the model in Tensorflow 2 Keras"""
-        model = Sequential()
-
-        model.add(Conv2D(64, (4, 4), input_shape=self.observation_shape, 
-                         activation='relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Dropout(0.2))
-
-        model.add(Conv2D(32, (4, 4), activation='relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Dropout(0.2))
-
-        model.add(Flatten())
-        model.add(Dense(512, activation='relu'))
-        model.add(Dense(64, activation='relu'))
-        model.add(Dense(self.action_size, activation='linear'))
-        model.compile(loss='mse', optimizer=Adam(learning_rate=self.learning_rate), 
-                      metrics=['accuracy'])
-        
-        return model
-
-    def train(self, terminal_state, step):
-        if self.replay_buffer.size < self.buffer_min_size:
-            return
-        mini_batch = self.replay_buffer.sample(self.batch_size)
-
-        state_batch = [a[0] for a in mini_batch]
-        n_state_batch = [a[4] for a in mini_batch]
-
-        current_qs_list = self.model.predict(state_batch/255)
-        next_qs = self.target_model.predict(n_state_batch/255)
-
-        X = []
-        y = []
-
-        for index, (current_state, action, reward, done, n_state) in enumerate(mini_batch):
-            if not done:
-                max_future_q = np.max(next_qs[index])
-                new_q = reward + self.gamma * max_future_q
-            else:
-                new_q = reward
-            
-            current_qs = current_qs_list[index]
-            current_qs[action] = new_q
-
-            X.append(current_state)
-            y.append(current_qs)
-
-        self.model.fit(np.array(X)/255, np.array(y), batch_size=self.batch_size, 
-                        verbose=0, shuffle=False)
-
-        if terminal_state:
-            self.target_update_counter += 1
-
-        if self.target_update_counter > self.update_target_step:
-            self.target_model.set_weights(self.model.get_weights())
-            self.target_update_counter = 0
-
-
-    def add_experience(self, s, a, r, d, s2):
-        self.replay_buffer.add(s, a, r, d, s2) 
-    
     def get_action(self, state):
-        return self.model.predict(state.reshape(-1, *state.shape)/255)[0]
-
+        """
+        Get action from model using epsilon-greedy policy
+        """
+        if np.random.rand() <= self.epsilon:
+            action_idx = random.randrange(self.action_size)
+        else:
+            q = self.model.predict(state)
+            action_idx = np.argmax(q)
+        return action_idx
+           
+    def replay_memory(self, s_t, action_idx, r_t, s_t1, is_terminated, t):
+        self.replay_buffer.add(s_t, action_idx, r_t, is_terminated, s_t1)
+        if self.epsilon > self.final_epsilon and t > self.observe:
+            self.epsilon -= (self.initial_epsilon - self.final_epsilon) / self.explore
+        
+        if t % self.update_target_freq == 0:
+            self.update_target_model()
     
+    def train_minibatch_replay(self):
+        """
+        Train on a single minibatch
+        """
+        mini_batch = self.replay_buffer.sample(self.batch_size)
+    
+        update_input = np.zeros(((batch_size,) + self.state_size)) # Shape 64, img_rows, img_cols, 4
+        update_target = np.zeros(((batch_size,) + self.state_size))
+        action, reward, done = [], [], []
+
+        for i in range(batch_size):
+            update_input[i,:,:,:] = mini_batch[i][0]
+            action.append(mini_batch[i][1])
+            reward.append(mini_batch[i][2])
+            update_target[i,:,:,:] = mini_batch[i][4]
+            done.append(mini_batch[i][3])
+
+        target = self.model.predict(update_input) # shape 64, num_actions
+
+        target_val = self.model.predict(update_target)
+        target_val_ = self.target_model.predict(update_target)
+
+        for i in range(self.batch_size):
+            # like Q learning, get maximum Q value at s'
+            # But from target model
+            if done[i]:
+                target[i][action[i]] = reward[i]
+            else:
+                # the key point of Double DQN
+                # selection of action is from model
+                # update is from target model
+                a = np.argmax(target_val[i])
+                target[i][action[i]] = reward[i] + self.gamma * (target_val_[i][a])
+        
+        # make minibatch which includes target q value and predicted q value
+        # and do the model fit!
+        loss = self.model.train_on_batch(update_input, target)
+
+        return np.max(target[-1]), loss
+
+    # pick samples randomly from replay memory (with batch size)
+    def train_replay(self):
+
+        num_samples = min(self.batch_size * self.timestep_per_train, self.replay_buffer.size)
+        replay_samples = self.replay_buffer.sample(num_samples)
+
+        update_input = np.zeros(((num_samples,) + self.state_size))
+        update_target = np.zeros(((num_samples,) + self.state_size))
+        action, reward, done = [], [], []
+
+        for i in range(num_samples):
+            update_input[i,:,:,:] = replay_samples[i][0]
+            action.append(replay_samples[i][1])
+            reward.append(replay_samples[i][2])
+            update_target[i,:,:,:] = replay_samples[i][4]
+            done.append(replay_samples[i][3])
+
+        target = self.model.predict(update_input)
+        target_val = self.model.predict(update_target)
+        target_val_ = self.target_model.predict(update_target)
+
+        for i in range(num_samples):
+            # like Q learning, get maximum Q value at s'
+            # But from target model
+            if done[i]:
+                target[i][action[i]] = reward[i]
+            else:
+                # the key point of Double DQN
+                # selection of action is from model
+                # update is from target model
+                a = np.argmax(target_val[i])
+                target[i][action[i]] = reward[i] + self.gamma * (target_val_[i][a])
+
+        loss = self.model.fit(update_input, target, batch_size=self.batch_size, epochs=1, verbose=0)
+
+        return np.max(target[-1]), loss.history['loss']
+
+    # load the saved model
+    def load_model(self, name):
+        self.model.load_weights(name)
+    
+    # save the model which is under training
+    def save_model(self, name):
+        self.model.save_weights(name)
