@@ -77,7 +77,6 @@ if __name__ == '__main__':
                 break
         
         if episode%10 == 0:
-            print(os.listdir(os.getcwd()))
             agent.save_model("ddqn.h5")
 
         if len(episode_rewards) > 1:
