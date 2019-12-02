@@ -57,7 +57,11 @@ if __name__ == '__main__':
             s_t = np.expand_dims(s_t, axis=0) # 1x64x64x4
 
             action_idx = agent.get_action(s_t)
-            next_state, reward, done, info = env.step(action_idx)
+            try:
+                next_state, reward, done, info = env.step(action_idx)
+            except:
+                print("VizDoom crashed. Rebooting.")
+                break
 
             x_t1 = preprocessImg(next_state, size=(img_rows, img_cols))
             x_t1 = np.reshape(x_t1, (1, img_rows, img_cols, 1))
