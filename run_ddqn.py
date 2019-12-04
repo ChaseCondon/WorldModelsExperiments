@@ -1,3 +1,4 @@
+print("importing stuff")
 import os
 import gym
 import vizdoomgym
@@ -5,7 +6,7 @@ import numpy as np
 import skimage as skimage
 from skimage import transform, color, exposure
 
-
+print("importing DDQN")
 from models.DDQN import DoubleDQNAgent
 
 NUM_STEPS     = 5000
