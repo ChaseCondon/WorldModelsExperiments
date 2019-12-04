@@ -21,14 +21,18 @@ def preprocessImg(img, size):
     return img
 
 if __name__ == '__main__':
+    print("beginning code")
     img_rows, img_cols = 64, 64
     # Convert image into Black and white
     img_channels = 4 # We stack 4 frames
 
     state_size = (img_rows, img_cols, img_channels)
 
+    print("setting directory")
     os.chdir('/nfs')
+    print("creating environment")
     env = gym.make('VizdoomTakeCover-v0')
+    print("creating agent")
     agent = DoubleDQNAgent(state_size, env.action_space.n)
 
     episode = 0
