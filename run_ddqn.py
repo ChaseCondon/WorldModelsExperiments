@@ -101,6 +101,6 @@ if __name__ == '__main__':
         last_average = average_reward
 
     agent.save_model("ddqn.h5")
-    with open("out/run_ddqn_out.txt", "w+") as file:
+    with open("run_ddqn_out.txt", "w+") as file:
         for log in logs:
             file.write(log + '\n')
