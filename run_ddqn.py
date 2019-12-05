@@ -1,5 +1,7 @@
 print("importing stuff")
 import os
+from datetime import datetime
+
 import gym
 import vizdoomgym
 import numpy as np
@@ -22,18 +24,20 @@ def preprocessImg(img, size):
     return img
 
 if __name__ == '__main__':
-    print("beginning code")
+
+
+    print(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - beginning code")
     img_rows, img_cols = 64, 64
     # Convert image into Black and white
     img_channels = 4 # We stack 4 frames
 
     state_size = (img_rows, img_cols, img_channels)
 
-    print("setting directory")
+    print(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - setting directory")
     os.chdir('/nfs')
-    print("creating environment")
+    print(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - creating environment")
     env = gym.make('VizdoomTakeCover-v0')
-    print("creating agent")
+    print(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - creating agent")
     agent = DoubleDQNAgent(state_size, env.action_space.n)
 
     episode = 0
@@ -44,7 +48,7 @@ if __name__ == '__main__':
     logs = []
     total_t_step = 0
 
-    print("Environment and Agent intialized. Beginning game...")
+    print(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - Environment and Agent intialized. Beginning game...")
     # print(f"{os.getcwd()}/WorldModelsExperiments/models/ddqn.h5", os.path.exists(f"{os.getcwd()}/WorldModelsExperiments/models/ddqn.h5"))
 
     while True:
@@ -91,9 +95,9 @@ if __name__ == '__main__':
         if len(episode_rewards) > 1:
             average_reward = np.mean(episode_rewards[:-1])
         
-        if (episode-1)%50 == 0:
-            print(f"Episode {episode}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}\n\taverage_reward: {average_reward}\n\tchange in average:{average_reward-last_average}")
-        logs.append(f"Episode {episode}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}\n\taverage_reward: {average_reward}\n\tchange in average:{average_reward-last_average}")
+        if (episode-1)%10 == 0:
+            print(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - Episode {episode}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}\n\taverage_reward: {average_reward}\n\tchange in average:{average_reward-last_average}")
+        logs.append(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - Episode {episode}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}\n\taverage_reward: {average_reward}\n\tchange in average:{average_reward-last_average}")
 
         if episode != 1 and abs(average_reward - last_average) < .01:
             break
