@@ -93,7 +93,7 @@ if __name__ == '__main__':
         
         if (episode-1)%50 == 0:
             print(f"Episode {episode}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}\n\taverage_reward: {average_reward}\n\tchange in average:{average_reward-last_average}")
-        logs.append(f"Episode {episode}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}")
+        logs.append(f"Episode {episode}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}\n\taverage_reward: {average_reward}\n\tchange in average:{average_reward-last_average}")
 
         if episode != 1 and abs(average_reward - last_average) < .01:
             break
@@ -101,6 +101,6 @@ if __name__ == '__main__':
         last_average = average_reward
 
     agent.save_model("ddqn.h5")
-    with open("run_dqnn_out.txt", "w+") as file:
+    with open("out/run_ddqn_out.txt", "w+") as file:
         for log in logs:
             file.write(log + '\n')
