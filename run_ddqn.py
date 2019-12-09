@@ -108,7 +108,7 @@ if __name__ == '__main__':
             else:
                 print('Converged! Ending sequence.')
                 break
-        else
+        else:
             convergence_count = 0
 
         last_average = average_reward

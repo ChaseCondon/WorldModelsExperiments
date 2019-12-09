@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ddqn-job
+  namespace: 2262645cproject
+spec:
+  template:        
+    metadata:
+      name: ddqn-job
+    spec:
+      containers:
+      - name: ddqn-job-container  
+        image: chasecondon/vizdoomgym
+        command: 
+          - "python3"
+          - "/nfs/WorldModelsExperiments/run_ddqn.py"
+        resources:
+          requests:
+            cpu: "8000m" 
+            memory: "32Gi"
+            nvidia.com/gpu: 1 
+          limits:
+            cpu: "8000m" 
+            memory: "32Gi"
+            nvidia.com/gpu: 1 
+        volumeMounts:
+        - mountPath: /nfs
+          name: nfs-access
+      volumes:
+      - name: nfs-access
+        persistentVolumeClaim: 
+          claimName: 2262645cvol1claim 
+      # nodeSelector:
+      #   node-role.ida/gpu2080ti: "true"
+      restartPolicy: OnFailure
