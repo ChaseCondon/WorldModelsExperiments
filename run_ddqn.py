@@ -16,6 +16,8 @@ NUM_STEPS     = 5000
 EPSILON = 0.9
 EPSILON_DECAY = 0.99
 
+convergence_count = 0
+
 def preprocessImg(img, size):
     img = np.rollaxis(img, 0, 3)
     img = skimage.transform.resize(img, size)
@@ -99,8 +101,15 @@ if __name__ == '__main__':
             print(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - Episode {episode}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}\n\taverage_reward: {average_reward}\n\tchange in average:{average_reward-last_average}")
         logs.append(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')} - Episode {episode}:\n\tlatest episode reward: {episode_reward}\n\ttotal episode reward: {total_reward}\n\taverage_reward: {average_reward}\n\tchange in average:{average_reward-last_average}")
 
-        if episode != 1 and abs(average_reward - last_average) < .01:
-            break
+        if episode != 1 and abs(average_reward - last_average) < .0001:
+            if convergence_count < 5:
+                print(f"Convergence count upped! Current count {convergence_count+1}")
+                convergence_count += 1
+            else:
+                print('Converged! Ending sequence.')
+                break
+        else
+            convergence_count = 0
 
         last_average = average_reward
 
