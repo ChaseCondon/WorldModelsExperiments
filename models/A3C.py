@@ -2,6 +2,7 @@
 
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.chdir('/nfs')
 
 import threading
 import gym
