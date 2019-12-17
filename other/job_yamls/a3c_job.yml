@@ -13,7 +13,8 @@ spec:
         image: chasecondon/vizdoomgym
         command: 
           - "python3"
-          - "/nfs/WorldModelsExperiments/models/A3C.py --train"
+          - "/nfs/WorldModelsExperiments/models/A3C.py"
+          - "--train"
         resources:
           requests:
             cpu: "8000m" 
