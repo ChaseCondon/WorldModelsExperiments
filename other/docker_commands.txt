@@ -1,0 +1,4 @@
+Desktop:
+    docker run --gpus all -it --rm -v /home/chase/Documents/University/L5/WorldModelsExperiments:/nfs chasecondon/vizdoomgym
+
+Laptop: 

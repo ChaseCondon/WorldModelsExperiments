@@ -88,9 +88,6 @@ class DQNAgent():
             if done[i]:
                 target[i][action[i]] = reward[i]
             else:
-                # the key point of Double DQN
-                # selection of action is from model
-                # update is from target model
                 a = np.argmax(target_val[i])
                 target[i][action[i]] = reward[i] + self.gamma * (target_val[i][a])
 
